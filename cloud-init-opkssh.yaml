@@ -1,0 +1,16 @@
+#cloud-config
+# 1. Automatically update apt and install dependencies before running commands
+packages:
+  - curl
+  - ca-certificates
+
+runcmd:
+  # 2. Download and execute the official opkssh Linux installation script
+  - [ sh, -c, 'curl -sSL "https://raw.githubusercontent.com/openpubkey/opkssh/main/scripts/install-linux.sh" | bash' ]
+  # 3. Authorize your email to log in as 'root' using Google as the provider
+  - [ /usr/local/bin/opkssh, add, root, venkata@venkatamutyala.com, google ]
+  # 4. Authorize your email to log in as the default 'debian' cloud user (if it exists)
+  - [ sh, -c, 'id -u debian >/dev/null 2>&1 && /usr/local/bin/opkssh add debian venkata@venkatamutyala.com google || true' ]
+  # 5. Reload the Debian SSH daemon to apply changes immediately
+  - [ systemctl, reload, ssh ]
+
